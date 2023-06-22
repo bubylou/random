@@ -2,7 +2,6 @@ package main
 
 import (
 	"io/ioutil"
-	"log"
 	"math/rand"
 	"net/http"
 	"os"
@@ -16,7 +15,7 @@ func randomVideo() string {
 
 	files, err := ioutil.ReadDir(directory)
 	if err != nil {
-		log.Fatal(err)
+		return ""
 	}
 
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -24,12 +23,7 @@ func randomVideo() string {
 	return directory + file.Name()
 }
 
-func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "3000"
-	}
-
+func setupRouter() *gin.Engine {
 	r := gin.Default()
 
 	r.LoadHTMLGlob("templates/*")
@@ -42,11 +36,19 @@ func main() {
 
 	api := r.Group("/api")
 	api.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"status": "ok",
-		})
+		c.String(http.StatusOK, "ok")
 	})
 
+	return r
+}
+
+func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+
+	r := setupRouter()
 	r.StaticFS("/assets", http.Dir("assets"))
 	r.Run(":" + port)
 }
