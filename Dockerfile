@@ -14,7 +14,6 @@ WORKDIR /app
 COPY --from=build-stage /go/src/app/random ./
 COPY assets assets/
 COPY templates templates/
-RUN mkdir assets/video
 
 EXPOSE 3000
 CMD ["./random"]
