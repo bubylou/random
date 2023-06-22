@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>bubylou.com</title>
+    <title>{{ .title }}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" type="text/css" href="/assets/style.css" />
   </head>
   <body>
-    <video src="{{ . }}" autoplay controls loop onloadstart="this.volume=0.5" />
+    <video
+      src="{{ .video }}"
+      autoplay
+      controls
+      loop
+      onloadstart="this.volume=0.5"
+    />
   </body>
 </html>

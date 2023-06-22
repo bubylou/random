@@ -1,20 +1,15 @@
 package main
 
 import (
-	"html/template"
 	"io/ioutil"
 	"log"
 	"math/rand"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
-
-var tpl = template.Must(template.ParseFiles("index.html"))
-
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	tpl.Execute(w, randomVideo())
-}
 
 func randomVideo() string {
 	directory := "assets/video/"
@@ -35,8 +30,23 @@ func main() {
 		port = "3000"
 	}
 
-	mux := http.NewServeMux()
-	mux.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
-	mux.HandleFunc("/", indexHandler)
-	http.ListenAndServe(":"+port, mux)
+	r := gin.Default()
+
+	r.LoadHTMLGlob("templates/*")
+	r.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.tmpl", gin.H{
+			"title": "random.bubylou.com",
+			"video": randomVideo(),
+		})
+	})
+
+	api := r.Group("/api")
+	api.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"status": "ok",
+		})
+	})
+
+	r.StaticFS("/assets", http.Dir("assets"))
+	r.Run(":" + port)
 }

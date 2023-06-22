@@ -2,7 +2,7 @@
 FROM golang:alpine AS build-stage
 
 WORKDIR /go/src/app
-COPY go.mod ./
+COPY go.mod go.sum ./
 RUN go mod download
 
 COPY *.go ./
@@ -12,9 +12,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o random
 FROM alpine:3.18 AS release-stage
 WORKDIR /app
 COPY --from=build-stage /go/src/app/random ./
-COPY index.html .
 COPY assets assets/
-RUN mkdir /video
+COPY templates templates/
+RUN mkdir assets/video
 
 EXPOSE 3000
 CMD ["./random"]
