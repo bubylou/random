@@ -11,7 +11,7 @@ func Test_randomVideo(t *testing.T) {
 		name string
 		want string
 	}{
-		struct{ name, want string }{"example", "assets/video/computer_time.webm"},
+		struct{ name, want string }{"no files", ""},
 	}
 
 	for _, tt := range tests {

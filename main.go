@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"os"
@@ -10,17 +9,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func randomVideo() string {
-	directory := "assets/video/"
+var (
+	port      string
+	directory string
+)
 
-	files, err := ioutil.ReadDir(directory)
+func randomVideo() string {
+	files, err := os.ReadDir(directory)
 	if err != nil {
 		return ""
 	}
 
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	file := files[r.Intn(len(files))]
-	return directory + file.Name()
+	return file.Name()
 }
 
 func setupRouter() *gin.Engine {
@@ -30,7 +32,7 @@ func setupRouter() *gin.Engine {
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
 			"title": "random.bubylou.com",
-			"video": randomVideo(),
+			"video": "/videos/" + randomVideo(),
 		})
 	})
 
@@ -43,12 +45,18 @@ func setupRouter() *gin.Engine {
 }
 
 func main() {
-	port := os.Getenv("PORT")
+	port = os.Getenv("PORT")
 	if port == "" {
 		port = "3000"
 	}
 
+	directory = os.Getenv("DIRECTORY")
+	if directory == "" {
+		directory = "/videos"
+	}
+
 	r := setupRouter()
-	r.StaticFS("/assets", http.Dir("assets"))
+	r.StaticFS("/assets", http.Dir("./assets"))
+	r.StaticFS("/videos", http.Dir(directory))
 	r.Run(":" + port)
 }
