@@ -14,17 +14,14 @@ var (
 	directory string
 )
 
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
-
 func randomVideo() string {
 	files, err := os.ReadDir(directory)
 	if err != nil {
 		return ""
 	}
 
-	file := files[rand.Intn(len(files))]
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	file := files[r.Intn(len(files))]
 	return file.Name()
 }
 
