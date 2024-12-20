@@ -1,5 +1,5 @@
 group "default" {
-  targets = ["main", "all"]
+  targets = ["image"]
 }
 
 variable "REPO" {
@@ -10,7 +10,7 @@ variable "TAG" {
   default = "latest"
 }
 
-target "main" {
+target "image" {
   context = "."
   dockerfile = "Dockerfile"
   cache-from = ["type=gha"]
@@ -24,8 +24,7 @@ target "main" {
           "docker.io/${REPO}:latest", "docker.io/${REPO}:${TAG}"]
 }
 
-target "all" {
-  inherits = ["main"]
-  platforms = ["linux/386", "linux/amd64", "linux/arm64",
-	       "linux/arm/v6", "linux/arm/v7", "linux/ppc64le", "linux/s390x"]
+target "image-all" {
+  inherits = ["image"]
+  platforms = ["linux/386", "linux/amd64", "linux/arm64", "linux/arm/v7"]
 }
