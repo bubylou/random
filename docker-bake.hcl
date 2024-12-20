@@ -10,7 +10,10 @@ variable "TAG" {
   default = "latest"
 }
 
+target "docker-metadata-action" {}
+
 target "image" {
+  inherits = ["docker-metadata-action"]
   context = "."
   dockerfile = "Dockerfile"
   cache-from = ["type=gha"]
