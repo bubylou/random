@@ -1,5 +1,7 @@
-# Build the application from source
-FROM golang:1.22-alpine AS build-stage
+ARG GO_VERSION="1.22"
+
+# Build stage with Go
+FROM golang:${GO_VERSION}-alpine AS build
 
 WORKDIR /go/src/app
 COPY go.mod go.sum ./
@@ -9,7 +11,8 @@ COPY *.go ./
 RUN CGO_ENABLED=0 GOOS=linux go build -o random
 
 # Release version with minmal file size
-FROM alpine:3.21.0 AS release-stage
+FROM alpine:3.21.0 AS release
+
 WORKDIR /app
 COPY --from=build-stage /go/src/app/random ./
 COPY assets assets/
@@ -17,3 +20,9 @@ COPY templates templates/
 
 EXPOSE 3000
 CMD ["./random"]
+
+# Test stage
+FROM build AS test
+RUN --mount=target=. \
+	--mount=type=cache,target=/go/pkg/mod \
+	go test .

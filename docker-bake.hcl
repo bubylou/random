@@ -1,5 +1,5 @@
 group "default" {
-  targets = ["image"]
+  targets = ["image", "test"]
 }
 
 variable "REPO" {
@@ -15,11 +15,6 @@ target "image" {
   dockerfile = "Dockerfile"
   cache-from = ["type=gha"]
   cache-to = ["type=gha,mode=max"]
-  labels = {
-    "org.opencontainers.image.source" = "https://github.com/bubylou/random"
-    "org.opencontainers.image.authors" = "Nicholas Malcolm <bubylou@pm.me>"
-    "org.opencontainers.image.licenses" = "GPL-3.0-or-later"
-  }
   tags = ["ghcr.io/${REPO}:latest", "ghcr.io/${REPO}:${TAG}",
           "docker.io/${REPO}:latest", "docker.io/${REPO}:${TAG}"]
 }
@@ -27,4 +22,9 @@ target "image" {
 target "image-all" {
   inherits = ["image"]
   platforms = ["linux/386", "linux/amd64", "linux/arm64", "linux/arm/v7"]
+}
+
+target "test" {
+  target = "test"
+  output = ["type=cacheonly"]
 }
