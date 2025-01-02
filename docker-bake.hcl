@@ -17,9 +17,13 @@ variable "GO_VERSION" {
 target "docker-metadata-action" {}
 
 target "build" {
-  inherits = ["release"]
+  context = "."
+  dockerfile = "Dockerfile"
   cache-from = ["type=registry,ref=ghcr.io/${REPO}"]
   cache-to = ["type=inline"]
+  args = { GO_VERSION = "${GO_VERSION}" }
+  tags = ["ghcr.io/${REPO}:latest", "ghcr.io/${REPO}:${TAG}",
+          "docker.io/${REPO}:latest", "docker.io/${REPO}:${TAG}"]
 }
 
 target "release" {
@@ -28,18 +32,15 @@ target "release" {
   dockerfile = "Dockerfile"
   cache-from = ["type=gha"]
   cache-to = ["type=gha,mode=max"]
-  args = { GO_VERSION = "${GO_VERSION}" }
-  tags = ["ghcr.io/${REPO}:latest", "ghcr.io/${REPO}:${TAG}",
-          "docker.io/${REPO}:latest", "docker.io/${REPO}:${TAG}"]
+  attest = [
+    "type=provenance,mode=max",
+    "type=sbom"
+  ]
 }
 
 target "release-all" {
   inherits = ["release"]
   platforms = ["linux/386", "linux/amd64", "linux/arm64", "linux/arm/v7"]
-  attest = [
-    "type=provenance,mode=max",
-    "type=sbom"
-  ]
 }
 
 target "test" {

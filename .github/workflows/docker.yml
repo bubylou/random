@@ -28,10 +28,13 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: docker/metadata-action@v5.6.1
         with:
-          images: ${{ github.repository }}
+          images: |
+            docker.io/${{ github.repository }}
+            ghcr.io/${{ github.repository }}
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
             type=raw,value=latest,enable={{ is_default_branch }}
             type=ref,event=branch
             type=ref,event=pr
@@ -71,4 +74,4 @@ jobs:
             ./docker-bake.hcl
             ${{ steps.meta.outputs.bake-file }}
           push: ${{ github.event_name != 'pull_request' }}
-          target: release-all
+          targets: release-all
