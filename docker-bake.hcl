@@ -10,6 +10,10 @@ variable "TAG" {
   default = "latest"
 }
 
+variable "GO_VERSION" {
+  default = "1.22"
+}
+
 target "docker-metadata-action" {}
 
 target "image" {
@@ -18,6 +22,7 @@ target "image" {
   dockerfile = "Dockerfile"
   cache-from = ["type=gha"]
   cache-to = ["type=gha,mode=max"]
+  args = { GO_VERSION = "${GO_VERSION}" }
   tags = ["ghcr.io/${REPO}:latest", "ghcr.io/${REPO}:${TAG}",
           "docker.io/${REPO}:latest", "docker.io/${REPO}:${TAG}"]
 }

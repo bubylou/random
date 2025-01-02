@@ -10,19 +10,19 @@ RUN go mod download
 COPY *.go ./
 RUN CGO_ENABLED=0 GOOS=linux go build -o random
 
-# Release version with minmal file size
-FROM alpine:3.21.0 AS release
-
-WORKDIR /app
-COPY --from=build-stage /go/src/app/random ./
-COPY assets assets/
-COPY templates templates/
-
-EXPOSE 3000
-CMD ["./random"]
-
 # Test stage
 FROM build AS test
 RUN --mount=target=. \
 	--mount=type=cache,target=/go/pkg/mod \
 	go test .
+
+# Release version with minmal file size
+FROM alpine:3.21.0 AS release
+
+WORKDIR /app
+COPY --from=build /go/src/app/random ./
+COPY assets assets/
+COPY templates templates/
+
+EXPOSE 3000
+CMD ["./random"]
