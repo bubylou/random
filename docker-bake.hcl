@@ -1,5 +1,5 @@
 group "default" {
-  targets = ["image", "test"]
+  targets = ["build", "test"]
 }
 
 variable "REPO" {
@@ -16,7 +16,13 @@ variable "GO_VERSION" {
 
 target "docker-metadata-action" {}
 
-target "image" {
+target "build" {
+  inherits = ["release"]
+  cache-from = ["type=registry,ref=ghcr.io/${REPO}"]
+  cache-to = ["type=inline"]
+}
+
+target "release" {
   inherits = ["docker-metadata-action"]
   context = "."
   dockerfile = "Dockerfile"
@@ -27,9 +33,13 @@ target "image" {
           "docker.io/${REPO}:latest", "docker.io/${REPO}:${TAG}"]
 }
 
-target "image-all" {
-  inherits = ["image"]
+target "release-all" {
+  inherits = ["release"]
   platforms = ["linux/386", "linux/amd64", "linux/arm64", "linux/arm/v7"]
+  attest = [
+    "type=provenance,mode=max",
+    "type=sbom"
+  ]
 }
 
 target "test" {

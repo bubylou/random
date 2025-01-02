@@ -31,8 +31,11 @@ jobs:
           images: ${{ github.repository }}
           tags: |
             type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
             type=raw,value=latest,enable={{ is_default_branch }}
+            type=ref,event=branch
             type=ref,event=pr
+            type=sha
 
       # Add support for more platforms with QEMU
       - name: Set up QEMU
@@ -68,5 +71,4 @@ jobs:
             ./docker-bake.hcl
             ${{ steps.meta.outputs.bake-file }}
           push: ${{ github.event_name != 'pull_request' }}
-        env:
-          TAG: ${{ github.ref_name }}
+          target: release-all
