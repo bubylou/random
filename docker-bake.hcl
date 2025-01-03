@@ -1,5 +1,9 @@
 group "default" {
-  targets = ["build", "test"]
+  targets = ["build", "validate"]
+}
+
+group "validate" {
+  targets = ["lint", "test"]
 }
 
 variable "REPO" {
@@ -12,6 +16,10 @@ variable "TAG" {
 
 variable "GO_VERSION" {
   default = "1.22"
+}
+
+variable "GOLANGCI_LINT_VERSION" {
+  default = "1.61"
 }
 
 target "docker-metadata-action" {}
@@ -44,6 +52,11 @@ target "release" {
 target "release-all" {
   inherits = ["release"]
   platforms = ["linux/amd64", "linux/arm64", "linux/arm"]
+}
+
+target "lint" {
+  target = "lint"
+  output = ["type=cacheonly"]
 }
 
 target "test" {
