@@ -15,11 +15,11 @@ variable "TAG" {
 }
 
 variable "GO_VERSION" {
-  default = "1.22"
+  default = "1.23"
 }
 
 variable "GOLANGCI_LINT_VERSION" {
-  default = "1.61"
+  default = "1.63"
 }
 
 target "docker-metadata-action" {}
@@ -30,6 +30,7 @@ target "build" {
   cache-from = ["type=registry,ref=ghcr.io/${REPO}"]
   cache-to = ["type=inline"]
   args = {
+    GOLANGCI_LINT_VERSION = "${GOLANGCI_LINT_VERSION}"
     GO_VERSION = "${GO_VERSION}"
     GIN_MODE = "debug"
   }
