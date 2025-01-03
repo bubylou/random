@@ -17,7 +17,7 @@ RUN --mount=target=. \
 	go test .
 
 # Release version with minmal file size
-FROM gcr.io/distroless/static:nonroot AS release
+FROM gcr.io/distroless/static AS release
 
 ARG GIN_MODE=release
 ENV RV_DIR=/data/videos

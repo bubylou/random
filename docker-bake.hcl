@@ -21,7 +21,10 @@ target "build" {
   dockerfile = "Dockerfile"
   cache-from = ["type=registry,ref=ghcr.io/${REPO}"]
   cache-to = ["type=inline"]
-  args = { GO_VERSION = "${GO_VERSION}" }
+  args = {
+    GO_VERSION = "${GO_VERSION}"
+    GIN_MODE = "debug"
+  }
   tags = ["ghcr.io/${REPO}:latest", "ghcr.io/${REPO}:${TAG}",
           "docker.io/${REPO}:latest", "docker.io/${REPO}:${TAG}"]
 }
