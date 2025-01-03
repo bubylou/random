@@ -58,5 +58,5 @@ func main() {
 	r := setupRouter()
 	r.StaticFS("/assets", http.Dir("./assets"))
 	r.StaticFS("/videos", http.Dir(directory))
-	r.Run(":" + port)
+	_ = r.Run(":" + port)
 }
