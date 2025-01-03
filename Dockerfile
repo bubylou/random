@@ -28,5 +28,7 @@ COPY --from=build /go/src/app/random ./
 COPY assets assets/
 COPY templates templates/
 
-EXPOSE 3000
+VOLUME [ "/data" ]
+
+EXPOSE ${PORT}
 CMD ["./random"]
