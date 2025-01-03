@@ -45,14 +45,14 @@ func setupRouter() *gin.Engine {
 }
 
 func main() {
-	port = os.Getenv("PORT")
+	port = os.Getenv("RV_PORT")
 	if port == "" {
 		port = "3000"
 	}
 
-	directory = os.Getenv("DIRECTORY")
+	directory = os.Getenv("RV_DIR")
 	if directory == "" {
-		directory = "/videos"
+		directory = "/data/videos"
 	}
 
 	r := setupRouter()
