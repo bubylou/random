@@ -1,7 +1,7 @@
 ARG GO_VERSION="1.22"
 
 # Build stage with Go
-FROM golang:${GO_VERSION}-alpine AS build
+FROM golang:${GO_VERSION} AS build
 
 WORKDIR /go/src/app
 COPY go.mod go.sum ./
@@ -17,7 +17,11 @@ RUN --mount=target=. \
 	go test .
 
 # Release version with minmal file size
-FROM alpine:3.21.0 AS release
+FROM gcr.io/distroless/static:nonroot AS release
+
+ARG GIN_MODE=release
+ENV RV_DIR=/data/videos
+ENV RV_PORT=3000
 
 WORKDIR /app
 COPY --from=build /go/src/app/random ./
