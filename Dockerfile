@@ -24,6 +24,9 @@ RUN --mount=target=. \
 
 # Release version with minmal file size
 FROM gcr.io/distroless/static AS release
+LABEL org.opencontainers.image.source="https://github.com/bubylou/random"
+LABEL org.opencontainers.image.authors="Nicholas Malcolm <bubylou@pm.me>"
+LABEL org.opencontainers.image.licenses="GPL-3.0"
 
 ARG GIN_MODE=release
 ENV RV_DIR=/data/videos
