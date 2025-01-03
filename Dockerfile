@@ -1,7 +1,8 @@
 ARG GO_VERSION="1.22"
+ARG GOLANGCI_LINT_VERSION="1.61"
 
 # Build stage with Go
-FROM golang:${GO_VERSION} AS build
+FROM golang:${GO_VERSION}-alpine AS build
 
 WORKDIR /go/src/app
 COPY go.mod go.sum ./
@@ -9,6 +10,11 @@ RUN go mod download
 
 COPY *.go ./
 RUN CGO_ENABLED=0 GOOS=linux go build -o random
+
+# Linter
+FROM golangci/golangci-lint:v${GOLANGCI_LINT_VERSION}-alpine AS lint
+RUN --mount=target=.,rw \
+	golangci-lint run
 
 # Test stage
 FROM build AS test
