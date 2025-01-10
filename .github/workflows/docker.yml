@@ -81,7 +81,7 @@ jobs:
       - name: Sign the published Docker image
         if: ${{ github.event_name != 'pull_request' }}
         env:
-          DIGEST: ${{ steps.bake.outputs.digest }}
+          DIGEST: ${{ fromJson(steps.bake.outputs.metadata).release['containerimage.digest'] }}
           TAGS: ${{ steps.meta.outputs.tags }}
         run: |
           images=""
