@@ -1,7 +1,7 @@
 ARG GO_VERSION="1.23"
 ARG GOLANGCI_LINT_VERSION="1.63"
 
-# Build stage with Go
+# Build with Go
 FROM golang:${GO_VERSION}-alpine AS build
 
 WORKDIR /go/src/app
@@ -22,11 +22,11 @@ RUN --mount=target=. \
 	--mount=type=cache,target=/go/pkg/mod \
 	go test .
 
-# Release version with minmal file size
+# Release version
 FROM gcr.io/distroless/static AS release
-LABEL org.opencontainers.image.source="https://github.com/bubylou/random"
-LABEL org.opencontainers.image.authors="Nicholas Malcolm <bubylou@pm.me>"
-LABEL org.opencontainers.image.licenses="GPL-3.0"
+LABEL org.opencontainers.image.source="https://github.com/bubylou/random" \
+	org.opencontainers.image.authors="Nicholas Malcolm <bubylou@pm.me>" \
+	org.opencontainers.image.licenses="GPL-3.0"
 
 ARG GIN_MODE=release
 ENV RV_DIR=/data/videos

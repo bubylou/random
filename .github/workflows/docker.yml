@@ -23,27 +23,30 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Docker meta
-        id: meta
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3.7.0
+
+      # Extract metadata (tags, labels) for Docker
+      - name: Extract Docker metadata
         if: github.event_name != 'pull_request'
+        id: meta
         uses: docker/metadata-action@v5.6.1
         with:
           images: |
-            docker.io/${{ github.repository }}
-            ghcr.io/${{ github.repository }}
+            docker.io/${{ env.IMAGE_NAME }}
+            ghcr.io/${{ env.IMAGE_NAME }}
           tags: |
             type=semver,pattern=v{{version}}
             type=semver,pattern=v{{major}}.{{minor}}
-            type=raw,value=latest,enable={{ is_default_branch }}
-            type=ref,event=pr
-            type=sha
+            type=ref,event=branch,suffix=-{{ sha }}
+            type=raw,value=latest,enable={{is_default_branch}}
 
       # Add support for more platforms with QEMU
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3.2.0
 
       - name: Setup Docker buildx
-        uses: docker/setup-buildx-action@v3.7.1
+        uses: docker/setup-buildx-action@v3.8.0
 
       # Login against a Github registry except on PR
       - name: Log into github container registry
@@ -73,3 +76,16 @@ jobs:
             ${{ steps.meta.outputs.bake-file }}
           push: ${{ github.event_name != 'pull_request' }}
           targets: release-all
+
+      # Sign the resulting Docker images digest except on PRs.
+      - name: Sign the published Docker image
+        if: ${{ github.event_name != 'pull_request' }}
+        env:
+          DIGEST: ${{ steps.bake.outputs.digest }}
+          TAGS: ${{ steps.meta.outputs.tags }}
+        run: |
+          images=""
+          for tag in ${TAGS}; do
+            images+="${tag}@${DIGEST} "
+          done
+          cosign sign --yes ${images}
