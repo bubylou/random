@@ -1,0 +1,58 @@
+name: Container build
+
+on:
+  push:
+    branches: [ "main" ]
+    # Publish semver tags as releases.
+    tags: [ 'v*.*.*' ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  # github.repository as <account>/<repo>
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Add support for more platforms with QEMU
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3.2.0
+
+      - uses: earthly/actions-setup@v1
+        with:
+          version: v0.8.0
+
+      # Login against a Github registry except on PR
+      - name: Log into github container registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Login for Docker registry
+      - name: Log into docker container registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3.3.0
+        with:
+          registry: docker.io
+          username: ${{ vars.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      # Build and push container image with Earthly (don't push on PR)
+      - name: Build and push
+        env:
+          PLATFORMS: "--platform=linux/amd64 --platform=linux/arm64 --platform=linux/arm"
+          PUSH: ${{ github.event_name != 'pull_request' && '--push' || '' }}
+          TAG: ${{ github.ref_name }}
+        run: earthly --ci $PLATFORMS $PUSH +all --tag $TAG
