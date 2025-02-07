@@ -48,3 +48,6 @@ all:
     BUILD +build
     BUILD +test
     BUILD +container
+
+release:
+    BUILD --platform=linux/amd64 --platform=linux/arm64 --platform=linux/arm +all
