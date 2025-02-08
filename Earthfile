@@ -36,8 +36,8 @@ container:
     ENTRYPOINT ["./random"]
 
     # --push still required from cli to send to registry
-    SAVE IMAGE --push docker.io/random:$tag docker.io/random:latest
-    SAVE IMAGE --push ghcr.io/random:$tag ghcr.io/random:latest
+    SAVE IMAGE --push docker.io/bubylou/random:$tag docker.io/bubylou/random:latest
+    SAVE IMAGE --push ghcr.io/bubylou/random:$tag ghcr.io/bubylou/random:latest
 
 test:
     FROM +deps
