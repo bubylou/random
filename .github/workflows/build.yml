@@ -50,7 +50,7 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
 
       # Build and push container image with Earthly (don't push on PR)
-      - name: Build and push
+      - name: Build, test, and push container
         env:
           PUSH: ${{ github.event_name != 'pull_request' && '--push' || '' }}
           TAG: ${{ github.ref_name }}

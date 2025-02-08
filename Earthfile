@@ -1,5 +1,5 @@
 VERSION 0.8
-FROM docker.io/golang:1.23-alpine
+FROM cgr.dev/chainguard/go
 LABEL org.opencontainers.image.source="https://github.com/bubylou/random"
 LABEL org.opencontainers.image.authors="Nicholas Malcolm <bubylou@pm.me>"
 LABEL org.opencontainers.image.licenses="GPL3+"
@@ -23,7 +23,7 @@ build:
     SAVE ARTIFACT output/random
 
 container:
-    FROM gcr.io/distroless/static
+    FROM cgr.dev/chainguard/static
     ARG --required tag
 
     ENV GIN_MODE=release
@@ -50,4 +50,4 @@ all:
     BUILD +container
 
 release:
-    BUILD --platform=linux/amd64 --platform=linux/arm64 --platform=linux/arm +all
+    BUILD --platform=linux/amd64 --platform=linux/arm64 +all
